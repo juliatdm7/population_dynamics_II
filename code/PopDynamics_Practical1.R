@@ -78,4 +78,21 @@ sparrow <- droplevels(subset(sparrow, select = -id)) # remove id column so captu
 head(sparrow)
 
 
-#2. 
+#2. Simple Cormack-Jolly-Seber model
+
+mod1 <- crm(sparrow) # capture-mark-recapture (cmr) model
+
+mod1 # examine model and coefficient estimates
+
+mod1 <- cjs.hessian(mod1)
+
+mod1$results$reals # the estimates on the data scale are also stored within the results section of the model under ‘reals’.
+
+#As with a binomial GLM, these estimates are on the latent (logit) scale. We can transform them back to the data scale using the plogis() or predict() functions.
+
+plogis(mod1$results$beta$Phi)
+
+plogis(mod1$results$beta$p)
+
+predict(mod1, newdata=data.frame(sex = c('Female', 'Male')), se=T) # N.b. In this case, there are no groups or covariates in the model and so the 'newdata' argument is not used 
+
