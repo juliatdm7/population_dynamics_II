@@ -96,3 +96,14 @@ plogis(mod1$results$beta$p)
 
 predict(mod1, newdata=data.frame(sex = c('Female', 'Male')), se=T) # N.b. In this case, there are no groups or covariates in the model and so the 'newdata' argument is not used 
 
+
+#3. Unequal sampling intervals
+#This model assumes an equal time between each capture event. This assumption can be relaxed by including a vector of time intervals:
+mod2 <- crm(sparrow, time.intervals = c(1,2,1,1,1,1,1,3,4))
+mod2$results$reals
+
+#QUESTIONS: These models assumed constant survival rates and detection probabilities. Is this a realistic assumption for this system? What term might you include in the model next, and why?
+#I don't think constant survival rate is a realistic assumption. It can change between timestamps. F.e., maybe one year the winter is really bad and some individuals cannot feed enough to survive, while maybe the next year the opposite situation occurs.
+#As for the constant detection probability, I guess the assumption could be somewhat realistic if the method of recapture is the same every year, if the same people are involved in the experiment...
+#Different probabilities of recapture for different individuals?
+
