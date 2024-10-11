@@ -57,4 +57,34 @@ library(popbio)
   R <- (ClutchNo * HatchingSuc * FledglingNo) / 2 #We multiply the average number of clutches by the probability of hatching success by the average number of fledlings (when hatching is successful). We then divide by two as we're focusing only on the female section of our population and that section is around half of our population
   #Our estimated per capita reproduction rate is 1.590824
   
+#2. Deterministic Population Background
   
+#Now that we have figured out our transition rates, we can build our Matrix Population Model
+#We need a 3x3 matrix with the fertility transitions along the top row, and the survival transitions on the subsequent rows.
+
+#Relation between our estimates of survival rates and the transition probabilities of the matrix:
+
+  # Juvenile to Juvenile: S_j * R
+  # Yearling to Juvenile: S_y * R
+  # Adult to Juvenile: S_a * R
+  # Juvenile to Yearling: S_j
+  # Yearling to Yearling: 0 
+  # Adult to Yearling: 0 
+  # Juvenile to Adult: 0
+  # Yearling to Adult: S_y
+  # Adult to Adult: S_a
+  
+#Let's put the transition probabilities into a vector 
+sparrowMPM <- c(S_j * R, S_y * R, S_a * R, S_j, 0, 0, 0, S_y, S_a)
+names <- c("Juveniles", "Yearlings", "Adults")
+names <-list(names, names)
+
+#We can transform this vector into a matrix:
+sparrowMPM <- matrix(sparrowMPM, nrow=3, ncol=3, byrow=T, dimnames = names)
+
+#We can now use the popbio package to do some analyses of our deterministic MPM. For example, we can look at the population growth rate, lambda.
+lambda(sparrowMPM) #Our lambda is 1.267068.
+
+#What does this lambda tell us about our population? We know that a lambda = 2 implies an exponential growth in our population and that when lambda > 1, the population is experimenting a positive growth. 
+
+
