@@ -87,4 +87,26 @@ lambda(sparrowMPM) #Our lambda is 1.267068.
 
 #What does this lambda tell us about our population? We know that a lambda = 2 implies an exponential growth in our population and that when lambda > 1, the population is experimenting a positive growth. 
 
+#Let's project our population over 15 years
+t <- 15
+#We'll start with 50 juveniles, 20 yearlings and 30 adults
+n0 <- c(50,20,30)
 
+##a)Projected dynamics 
+    projection <- pop.projection(sparrowMPM, n0, iterations = t)
+    projected <- data.frame(time=1:15, N=projection$pop.sizes)
+
+    #Plot projected pop size over time
+    ggplot(projected, aes(time, N)) + 
+      geom_line() + ylim(0,1500) + ylab('Projected N')
+
+##b)Observed dynamics
+    #We can now compare our model to estimated values:
+    popest <- read.table("data/popest.txt", header = TRUE, sep = '\t')
+    head(popest)
+    #Let's plot N over time
+    ggplot(popest, aes(year, N)) + 
+      geom_line() + ylim(0,200) + ylab('Observed N')
+    #How does this population trajectory compare with our estimate of lambda?
+    #It grows, but it's not on constant growth and it's also not exponential growth, so it's definitely different.
+    
