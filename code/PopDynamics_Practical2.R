@@ -110,3 +110,39 @@ n0 <- c(50,20,30)
     #How does this population trajectory compare with our estimate of lambda?
     #It grows, but it's not on constant growth and it's also not exponential growth, so it's definitely different.
     
+##c)Stable stage distribution and reproductive value
+    stages <- c('Juv','Yr','Ad')
+    colnames(sparrowMPM) <- stages
+    rownames(sparrowMPM) <- stages
+    
+    stable.stage(sparrowMPM) #Here, we're using the "popbio" to look at the the stable stage distribution of our population, that is the long-term average relative abundance of the different stage classes.
+    
+    reproductive.value(sparrowMPM) #Here, we're looking at the reproductive values of the different stage classes, that is the expected contribution of each individual in that stage class to future reproduction.
+    
+    #We could potentially compare the stable stage distribution with what we observed based on the recapture data to tell us something about the performance of our model, but we won’t do this today.
+    
+##d)Perturbation analysis
+    #We can also use popbio to calculate sensitivities and elasticities of the different vital rates. 
+    #These tell us about the relative importance of each vital rate (or matrix transition) in determining the population growth rate, lambda.
+    #Sensitivities estimate the change in lambda for an absolute change in a vital rate.
+    #Elasticities tell us about the effect of a proportional change.
+    #Let's list the vital rates
+    sparrow.param <- list(Phi.juv = S_j, Phi.yr = S_y, Phi.ad = S_a, R = R)
+    
+    #Give the matrix equation 
+    sparrow.equation <- expression(Phi.juv * R, Phi.yr * R, Phi.ad * R, Phi.juv, 0, 0, 0, Phi.yr, Phi.ad)
+    
+    #Run the sensitivity analysis
+    sens <- vitalsens(sparrow.equation, sparrow.param)
+    sens
+    
+    #Plot elasticity of the vital rates 
+    sens$vitalrate <- factor(c('Phi.juv', 'Phi.yr', 'Phi.ad', 'R'), levels = c('Phi.juv', 'Phi.yr', 'Phi.ad', 'R'))
+    ggplot(sens, aes(vitalrate, elasticity)) + 
+      geom_bar(stat = 'identity') 
+    
+    #Which vital rates are most important for population growth? Is this similar to the orca example that we saw in the lecture? Is this what you would expect based on the life-history of the species?
+    #Juvenile Survival and Reproduction Rates are the most important rates for population growth, which differs from the orca example we saw in the lecture in which it was Adult Survival Rate that mattered the most.
+    #These values are expected as Passerines tend to reach maturity the first year after they're born (in comparison to orcas, which reach sexual maturity between 7-16 years old (and they reach adulthood between 10 and 13 years old). 
+    #Also, in each reproductive event, orcas have one offspring and don't reproduce until around five years later, while some passerines can go through more than one reproductive event per year and lay (way) more than one egg.
+    #Passerines also tend to have shorter lives in comparison, so, putting all of this together, it does make sense that while Adult Survival is more important for population growth in orcas (they live longer and each reproductive event results in few offspring), for passerine species juvenile survival and reproduction rate are more importan (juvenile survival is a limiting factor, and although for not as long, each individual produces much more offspring per reproductive event).
