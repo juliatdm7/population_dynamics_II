@@ -107,3 +107,50 @@ mod2$results$reals
 #As for the constant detection probability, I guess the assumption could be somewhat realistic if the method of recapture is the same every year, if the same people are involved in the experiment...
 #Different probabilities of recapture for different individuals?
 
+
+#4. Including static covariates
+
+#The islands in the meta-population are all different, and the probability of recapture may differ between individuals of different islands.
+#We can test this by adding some additional complexity to our model and allowing the detection probability to vary between islands.
+
+#In the marked package, this is a three stage process:
+##1)Data processing
+
+sparrow.proc <- process.data(sparrow) # built in function for data processing
+
+str(sparrow.proc)
+
+head(sparrow.proc[[1]]) # here we're accessing the values (info) stored in the first "item" of our list "sparrow.proc".
+
+head(sparrow.proc$data) # we can also access that same column by using $ and calling it by its header
+
+##2)Building the design matrix
+
+sparrow.ddl <- make.design.data(sparrow.proc) # built in function for building design matrix 
+
+str(sparrow.ddl)
+
+View(sparrow.ddl)
+
+head(sparrow.ddl[[1]])
+
+head(sparrow.ddl$Phi)
+
+# specify model formulation: capture probability depends on island
+
+p.island <- list(formula=~island) 
+
+mod3 <- crm(sparrow.proc, 
+            sparrow.ddl, 
+            model.parameters = list(p = p.island), 
+            accumulate=FALSE, hessian = TRUE)
+
+mod3$results$reals
+
+##QUESTIONS: Does it look like detection probability varies among islands? Which island has the lowest detection probability? Why might this be? How might you compare this model with our simpler model above to see if it is a better fit?
+#Yes, right now it dues look like detection probability varies among islands. Myken island seems to have the lowest detection probability while Gjeroy island seems to have the highest detection probability. Maybe "ch" column has on average less 1s in comparison to all other island, and the model uses that to predict detectability.
+#To compare models we could look at the AIC; if it's lower for this model, then changing detection probabilities in relation to islands made our new model the best fit
+#mod3 has an AIC of 2423.197, while mod2 has an AIC of 2691.993 and mod1 has an AIC of 2454.35. Funny enough, the second model is the worst fit and this last model is the best fit, but not by far.
+#To get the AIC value without asking for the whole model we can just:
+(mod3$results$AIC)
+
